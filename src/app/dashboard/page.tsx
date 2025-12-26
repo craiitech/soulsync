@@ -34,8 +34,6 @@ const getDashboardState = async (userId: string, searchParams: { flow?: string; 
   }
 };
 
-const MOCK_PAIR_CODE = '123456';
-
 const MOCK_RESULTS = {
     summary: "You have a strong foundation built on core values of authenticity and growth. You approach relationships with a secure attachment style, which fosters trust and open communication. Your personality is balanced, with a healthy mix of extroversion and introspection, creating a dynamic and supportive nature.",
     strengths: "Core values in honesty and personal growth. Secure attachment style leading to high trust. Well-balanced personality traits.",
@@ -50,10 +48,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
   const user = MOCK_USER; 
   const { status, flow } = await getDashboardState(user.uid, searchParams);
 
+  // Generate a random 6-digit code. This is fine on the server.
+  const pairCode = Math.floor(100000 + Math.random() * 900000).toString();
+
   const renderContent = () => {
     switch (status) {
       case 'unpaired':
-        return <Pairing user={user} pairCode={MOCK_PAIR_CODE} />;
+        return <Pairing user={user} pairCode={pairCode} />;
       case 'paired_user_pending':
         // For a solo user, this shows the Start Quiz button.
         return <StartQuiz isSolo={flow === 'solo'} />;
