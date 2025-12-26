@@ -16,12 +16,9 @@ const getDashboardState = async (userId: string): Promise<PairStatus> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // Possible states to cycle through for demonstration
-  const states: PairStatus[] = ['unpaired', 'paired_user_pending', 'paired_partner_pending', 'results_ready'];
-  
-  // For demonstration, we'll cycle through states. A real app would have persistent state.
-  // This is a simplification to avoid needing a real database for the scaffold.
-  const currentState: PairStatus = 'paired_user_pending'; // Change this to 'unpaired', 'paired_partner_pending', or 'results_ready' to see other states.
+  // To simulate the "Analyze Your Style" flow, we'll default to the 'paired_user_pending' state
+  // which shows the "Start Quiz" component.
+  const currentState: PairStatus = 'paired_user_pending';
 
   return currentState;
 };
