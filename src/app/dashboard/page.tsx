@@ -10,37 +10,40 @@ import { Card, CardContent } from '@/components/ui/card';
 const MOCK_USER = { uid: 'user123', email: 'user@example.com', name: 'Alex' };
 
 type PairStatus = 'unpaired' | 'paired_user_pending' | 'paired_partner_pending' | 'results_ready';
+type FlowType = 'solo' | 'couple';
 
 // This function simulates fetching data from Firestore and determining the state.
-const getDashboardState = async (userId: string): Promise<PairStatus> => {
+const getDashboardState = async (userId: string): Promise<{ status: PairStatus, flow: FlowType }> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // To simulate the "Analyze Your Style" flow, we'll default to the 'paired_user_pending' state
-  // which shows the "Start Quiz" component.
-  const currentState: PairStatus = 'paired_user_pending';
+  // To simulate the single user results flow, we'll default to the 'results_ready' state.
+  // In a real app, you'd check if the user has completed their quiz.
+  const currentState: PairStatus = 'results_ready';
+  const currentFlow: FlowType = 'solo';
 
-  return currentState;
+
+  return { status: currentState, flow: currentFlow };
 };
 
 const MOCK_PAIR_CODE = '123456';
 
 const MOCK_RESULTS = {
-    summary: "You and your partner have a strong foundation built on shared core values, particularly in your appreciation for authenticity and growth. You both approach relationships with a secure attachment style, which fosters trust and open communication. Your personality traits are complementary; one's extroversion balances the other's introspection, creating a dynamic and supportive partnership.",
-    strengths: "Shared values in honesty and personal growth. Secure attachment styles leading to high trust. Complementary personality traits.",
-    growthAreas: "Differing communication styles under stress. Occasional misalignment on long-term financial goals. Navigating social energy levels can be a point of discussion.",
-    overallCompatibility: 88,
-    affirmation: "Like two trees planted side by side, your roots intertwine, strengthening each other as you reach for the sun."
+    summary: "You have a strong foundation built on core values of authenticity and growth. You approach relationships with a secure attachment style, which fosters trust and open communication. Your personality is balanced, with a healthy mix of extroversion and introspection, creating a dynamic and supportive nature.",
+    strengths: "Core values in honesty and personal growth. Secure attachment style leading to high trust. Well-balanced personality traits.",
+    growthAreas: "Tendency to be self-critical under stress. Occasional difficulty setting firm boundaries. Navigating high-energy social situations can be draining.",
+    overallCompatibility: 88, // This will be interpreted as a self-score for solo
+    affirmation: "Like a tree with deep roots, you are grounded and resilient, capable of weathering any storm while continuing to reach for the sun."
 };
 // END MOCK DATA
 
 export default async function DashboardPage() {
   // In a real app, you would get the user from the session
   const user = MOCK_USER; 
-  const dashboardState = await getDashboardState(user.uid);
+  const { status, flow } = await getDashboardState(user.uid);
 
   const renderContent = () => {
-    switch (dashboardState) {
+    switch (status) {
       case 'unpaired':
         return <Pairing user={user} pairCode={MOCK_PAIR_CODE} />;
       case 'paired_user_pending':
@@ -48,7 +51,7 @@ export default async function DashboardPage() {
       case 'paired_partner_pending':
         return <Waiting />;
       case 'results_ready':
-        return <Results results={MOCK_RESULTS} />;
+        return <Results results={MOCK_RESULTS} flow={flow} />;
       default:
         return <p>Loading...</p>;
     }

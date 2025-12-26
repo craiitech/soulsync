@@ -10,19 +10,28 @@ interface ResultsData {
   affirmation: string;
 }
 
-export function Results({ results }: { results: ResultsData }) {
+type FlowType = 'solo' | 'couple';
+
+export function Results({ results, flow }: { results: ResultsData, flow: FlowType }) {
   const getBadgeVariant = (score: number) => {
     if (score > 80) return 'default';
     if (score > 60) return 'secondary';
     return 'destructive';
   }
+  
+  const title = flow === 'solo' ? 'Your Personal Style Analysis' : 'Your SoulSync Results';
+  const description = flow === 'solo' 
+    ? "Here is a snapshot of your personal style based on your quiz responses. This is a tool for self-discovery and growth."
+    : "Here is a snapshot of your compatibility based on your quiz responses. Remember, this is a tool for insight, not a final judgment.";
+  const scoreTitle = flow === 'solo' ? 'Self-Awareness Score' : 'Overall Score';
+
 
   return (
     <div className="flex flex-col items-center text-center gap-8 w-full">
       <div className="space-y-2">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline">Your SoulSync Results</h1>
+        <h1 className="text-3xl md:text-4xl font-bold font-headline">{title}</h1>
         <p className="text-muted-foreground max-w-2xl">
-          Here is a snapshot of your compatibility based on your quiz responses. Remember, this is a tool for insight, not a final judgment.
+          {description}
         </p>
       </div>
 
@@ -53,7 +62,7 @@ export function Results({ results }: { results: ResultsData }) {
         </svg>
         <div className="absolute flex flex-col items-center">
           <span className="text-5xl font-bold text-primary">{results.overallCompatibility}</span>
-          <span className="text-sm text-muted-foreground">Overall Score</span>
+          <span className="text-sm text-muted-foreground">{scoreTitle}</span>
         </div>
       </div>
       
