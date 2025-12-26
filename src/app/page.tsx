@@ -210,6 +210,17 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="about-developer" className="w-full py-16 bg-secondary">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline">About the Application</h2>
+          <div className="mt-8 max-w-4xl mx-auto">
+            <p className="text-lg text-muted-foreground">
+              This application was developed by Dr. Marvin Rick G. Forcado. It is built upon established psychological research to provide users with meaningful insights into their relationship dynamics. The analysis incorporates principles from the "Big Five" personality traits model, Attachment Theory, and research into core values and love styles to generate a comprehensive and personalized compatibility report.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <footer className="w-full p-4 text-center text-xs text-muted-foreground bg-secondary z-10">
         <p>Disclaimer: This tool offers insights based on psychological research—not a clinical assessment. For relationship concerns, consult a licensed professional.</p>
       </footer>
