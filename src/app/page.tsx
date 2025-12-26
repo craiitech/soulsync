@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Logo } from '@/components/logo';
 import { ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
@@ -31,16 +32,26 @@ export default function Home() {
           <p className="text-lg md:text-xl text-muted-foreground">
             Discover the harmony in your connection. Explore your compatibility with your partner through insightful quizzes based on psychological frameworks.
           </p>
-          <Button size="lg" asChild className="font-bold text-lg">
-            <Link href="/signup">
-              Get Started <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <Link
+            href="/signup"
+            className={cn(
+              buttonVariants({ size: 'lg' }),
+              'font-bold text-lg'
+            )}
+          >
+            Get Started <ArrowRight className="ml-2 h-5 w-5" />
+          </Link>
           <p className="text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Button variant="link" asChild className="p-0 text-sm">
-              <Link href="/login">Log in</Link>
-            </Button>
+            <Link
+              href="/login"
+              className={cn(
+                buttonVariants({ variant: 'link' }),
+                'p-0 text-sm'
+              )}
+            >
+              Log in
+            </Link>
           </p>
         </div>
       </div>
