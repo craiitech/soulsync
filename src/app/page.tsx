@@ -58,7 +58,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <Link
-              href="/signup"
+              href="/dashboard"
               className={cn(
                 buttonVariants({ size: 'lg', variant: 'outline' }),
                 'font-bold text-lg bg-background/80'
@@ -68,7 +68,7 @@ export default function Home() {
               Analyze Your Style
             </Link>
              <Link
-              href="/signup"
+              href="/dashboard"
               className={cn(
                 buttonVariants({ size: 'lg' }),
                 'font-bold text-lg'
@@ -79,16 +79,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ variant: 'link' }),
-                'p-0 text-sm'
-              )}
-            >
-              Log in
-            </Link>
+            No account needed. Just start your analysis.
           </p>
         </div>
       </div>
