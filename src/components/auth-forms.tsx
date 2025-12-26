@@ -1,194 +1,79 @@
 "use client";
 
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from 'lucide-react';
 
-// NOTE: In a real app, these actions would be implemented in `src/app/actions/auth.ts`
-// and interact with Firebase Authentication. For this scaffold, they are placeholders.
-async function signUp(data: any) {
-  console.log("Signing up with:", data);
+// NOTE: In a real app, this action would be implemented in `src/app/actions/auth.ts`
+// and interact with Firebase Authentication's Google provider. For now, it's a placeholder.
+async function signInWithGoogle() {
+  console.log("Signing in with Google...");
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000));
-  // In a real app, you would use Firebase Auth here:
-  // const { user, error } = await firebaseSignUp(data.email, data.password);
+  // In a real app, you would use Firebase Auth's Google Popup/Redirect method here.
+  // const { user, error } = await firebaseSignInWithGoogle();
   // if (error) return { error: error.message };
   return { error: null };
 }
+// End of placeholder action
 
-async function signIn(data: any) {
-  console.log("Signing in with:", data);
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  // In a real app, you would use Firebase Auth here:
-  // const { user, error } = await firebaseSignIn(data.email, data.password);
-  // if (error) return { error: error.message };
-  return { error: null };
-}
-// End of placeholder actions
-
-const signupSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
-});
-
-export function SignupForm() {
+export function GoogleAuth() {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof signupSchema>>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: { email: '', password: '' },
-  });
-
-  const onSubmit = (values: z.infer<typeof signupSchema>) => {
+  const handleGoogleSignIn = () => {
     setError(null);
     startTransition(async () => {
-      const result = await signUp(values);
+      const result = await signInWithGoogle();
       if (result?.error) {
         setError(result.error);
       } else {
         toast({
-          title: "Account Created!",
-          description: "You have been successfully signed up. Redirecting to dashboard...",
+          title: "Authentication Successful",
+          description: "Welcome! Redirecting to your dashboard...",
         });
-        // A real app would redirect based on auth state.
-        // For now, we manually redirect.
         router.push('/dashboard');
       }
     });
   };
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {error && (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Signup Failed</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
-        )}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} disabled={isPending} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} disabled={isPending} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign Up
-        </Button>
-      </form>
-    </Form>
+  const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg role="img" viewBox="0 0 24 24" {...props}>
+      <path
+        fill="currentColor"
+        d="M12.48 10.92v3.28h7.84c-.24 1.84-.85 3.18-1.73 4.1-1.05 1.05-2.58 2.05-4.82 2.05-3.83 0-6.95-3.12-6.95-6.95s3.12-6.95 6.95-6.95c1.82 0 3.18.7 4.1 1.65l2.5-2.5C18.16 3.03 15.66 2 12.48 2 7.1 2 2.94 6.03 2.94 11.4s4.16 9.4 9.54 9.4c2.84 0 5.1-1 6.8-2.73 1.72-1.72 2.5-4.25 2.5-6.88 0-.6-.05-1.18-.15-1.73z"
+      ></path>
+    </svg>
   );
-}
-
-
-const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(1, { message: 'Please enter your password.' }),
-});
-
-export function LoginForm() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
-  });
-
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
-    setError(null);
-    startTransition(async () => {
-      const result = await signIn(values);
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back! Redirecting to your dashboard...",
-        });
-        router.push('/dashboard');
-      }
-    });
-  };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {error && (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Login Failed</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+    <div className="space-y-4">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Authentication Failed</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={handleGoogleSignIn}
+        disabled={isPending}
+      >
+        {isPending ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <GoogleIcon className="mr-2 h-5 w-5" />
         )}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} disabled={isPending} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="********" {...field} disabled={isPending} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Log In
-        </Button>
-      </form>
-    </Form>
+        Continue with Google
+      </Button>
+    </div>
   );
 }

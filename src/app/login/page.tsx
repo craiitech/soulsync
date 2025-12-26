@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LoginForm } from '@/components/auth-forms';
+import { GoogleAuth } from '@/components/auth-forms';
 import { Logo } from '@/components/logo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
@@ -13,11 +13,11 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
-            Log in to continue your journey with SoulSync.
+            Sign in with Google to continue your journey with SoulSync.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <LoginForm />
+          <GoogleAuth />
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="underline font-medium text-primary">

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SignupForm } from '@/components/auth-forms';
+import { GoogleAuth } from '@/components/auth-forms';
 import { Logo } from '@/components/logo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
@@ -13,11 +13,11 @@ export default function SignupPage() {
           </div>
           <CardTitle className="text-3xl font-bold">Create your Account</CardTitle>
           <CardDescription>
-            Start your journey to deeper connection.
+            Use Google to start your journey to deeper connection.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SignupForm />
+          <GoogleAuth />
           <div className="mt-4 text-center text-sm">
             Already have an account?{' '}
             <Link href="/login" className="underline font-medium text-primary">
