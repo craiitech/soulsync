@@ -13,7 +13,7 @@ type PairStatus = 'unpaired' | 'paired_user_pending' | 'paired_partner_pending' 
 type FlowType = 'solo' | 'couple';
 
 // This function simulates fetching data from Firestore and determining the state.
-const getDashboardState = async (userId: string, searchParams: { flow?: string }): Promise<{ status: PairStatus, flow: FlowType }> => {
+const getDashboardState = async (userId: string, searchParams: { flow?: string; results?: string }): Promise<{ status: PairStatus, flow: FlowType }> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
@@ -22,7 +22,11 @@ const getDashboardState = async (userId: string, searchParams: { flow?: string }
   // This logic simulates different states based on the flow.
   // In a real app, you'd check Firestore for the user's status.
   if (requestedFlow === 'solo') {
-    // For a solo user, we'll assume they haven't taken the quiz yet.
+    // If results=true is in the URL, show the results page.
+    if (searchParams.results === 'true') {
+      return { status: 'results_ready', flow: 'solo' };
+    }
+    // Otherwise, show the start quiz button for a solo user.
     return { status: 'paired_user_pending', flow: 'solo' };
   } else {
     // For a couple, we'll show the pairing screen by default.
@@ -41,7 +45,7 @@ const MOCK_RESULTS = {
 };
 // END MOCK DATA
 
-export default async function DashboardPage({ searchParams }: { searchParams: { flow?: string } }) {
+export default async function DashboardPage({ searchParams }: { searchParams: { flow?: string; results?: string } }) {
   // In a real app, you would get the user from the session
   const user = MOCK_USER; 
   const { status, flow } = await getDashboardState(user.uid, searchParams);
@@ -56,7 +60,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
       case 'paired_partner_pending':
         return <Waiting />;
       case 'results_ready':
-        // This state would be reached after quiz submission. For now, we link to it from the quiz page.
+        // This state is now reachable for the solo flow via query param.
         return <Results results={MOCK_RESULTS} flow={flow} />;
       default:
         return <p>Loading...</p>;

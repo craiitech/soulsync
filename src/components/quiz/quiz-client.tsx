@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import type { QuizQuestion, QuizAnswers } from '@/lib/types';
@@ -31,6 +31,7 @@ async function submitQuiz(answers: QuizAnswers) {
 
 export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -64,9 +65,11 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       if (result.success) {
         toast({
           title: "Quiz Complete!",
-          description: "Your responses have been submitted. Redirecting to your dashboard...",
+          description: "Your responses have been submitted. Redirecting to your results...",
         });
-        router.push('/dashboard');
+        const flow = searchParams.get('flow');
+        // Redirect to dashboard with params to show results
+        router.push(`/dashboard?flow=solo&results=true`);
       } else {
         toast({
           title: "Submission Failed",
@@ -150,7 +153,7 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
             <AlertDialogHeader>
               <AlertDialogTitle>Ready to submit your answers?</AlertDialogTitle>
               <AlertDialogDescription>
-                Once you submit, your answers will be final. Your results will be calculated and shown on your dashboard once your partner also completes the quiz.
+                Once you submit, your answers will be final. Your results will be calculated and shown on your dashboard.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
