@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { ArrowRight, FileQuestion } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function StartQuiz() {
   return (
@@ -14,14 +15,13 @@ export function StartQuiz() {
           You are ready to discover your relationship style.
         </p>
       </div>
-      <Button asChild size="lg">
-        <Link href="/quiz">
-          <span>
-            Start Quiz
-            <ArrowRight className="ml-2 h-5 w-5 inline" />
-          </span>
-        </Link>
-      </Button>
+      <Link
+        href="/quiz"
+        className={cn(buttonVariants({ size: 'lg' }))}
+      >
+        Start Quiz
+        <ArrowRight className="ml-2 h-5 w-5 inline" />
+      </Link>
     </div>
   );
 }
