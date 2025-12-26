@@ -21,7 +21,7 @@ const getDashboardState = async (userId: string): Promise<PairStatus> => {
   
   // For demonstration, we'll cycle through states. A real app would have persistent state.
   // This is a simplification to avoid needing a real database for the scaffold.
-  const currentState: PairStatus = 'unpaired'; // Change this to 'paired_user_pending', 'paired_partner_pending', or 'results_ready' to see other states.
+  const currentState: PairStatus = 'paired_user_pending'; // Change this to 'unpaired', 'paired_partner_pending', or 'results_ready' to see other states.
 
   return currentState;
 };
