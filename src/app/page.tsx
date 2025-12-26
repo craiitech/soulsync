@@ -31,7 +31,7 @@ export default function Home() {
           <p className="text-lg md:text-xl text-muted-foreground">
             Discover the harmony in your connection. Explore your compatibility with your partner through insightful quizzes based on psychological frameworks.
           </p>
-          <Button asChild size="lg" className="font-bold text-lg">
+          <Button size="lg" asChild className="font-bold text-lg">
             <Link href="/signup">
               Get Started <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
