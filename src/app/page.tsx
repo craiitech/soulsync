@@ -58,7 +58,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <Link
-              href="/dashboard"
+              href="/dashboard?flow=solo"
               className={cn(
                 buttonVariants({ size: 'lg', variant: 'outline' }),
                 'font-bold text-lg bg-background/80'

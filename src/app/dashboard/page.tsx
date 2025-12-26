@@ -13,17 +13,21 @@ type PairStatus = 'unpaired' | 'paired_user_pending' | 'paired_partner_pending' 
 type FlowType = 'solo' | 'couple';
 
 // This function simulates fetching data from Firestore and determining the state.
-const getDashboardState = async (userId: string): Promise<{ status: PairStatus, flow: FlowType }> => {
+const getDashboardState = async (userId: string, searchParams: { flow?: string }): Promise<{ status: PairStatus, flow: FlowType }> => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
-  // To simulate the single user results flow, we'll default to the 'results_ready' state.
-  // In a real app, you'd check if the user has completed their quiz.
-  const currentState: PairStatus = 'results_ready';
-  const currentFlow: FlowType = 'solo';
+  const requestedFlow = searchParams.flow === 'solo' ? 'solo' : 'couple';
 
-
-  return { status: currentState, flow: currentFlow };
+  // This logic simulates different states based on the flow.
+  // In a real app, you'd check Firestore for the user's status.
+  if (requestedFlow === 'solo') {
+    // For a solo user, we'll assume they haven't taken the quiz yet.
+    return { status: 'paired_user_pending', flow: 'solo' };
+  } else {
+    // For a couple, we'll show the pairing screen by default.
+    return { status: 'unpaired', flow: 'couple' };
+  }
 };
 
 const MOCK_PAIR_CODE = '123456';
@@ -37,20 +41,22 @@ const MOCK_RESULTS = {
 };
 // END MOCK DATA
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: { flow?: string } }) {
   // In a real app, you would get the user from the session
   const user = MOCK_USER; 
-  const { status, flow } = await getDashboardState(user.uid);
+  const { status, flow } = await getDashboardState(user.uid, searchParams);
 
   const renderContent = () => {
     switch (status) {
       case 'unpaired':
         return <Pairing user={user} pairCode={MOCK_PAIR_CODE} />;
       case 'paired_user_pending':
-        return <StartQuiz />;
+        // For a solo user, this shows the Start Quiz button.
+        return <StartQuiz isSolo={flow === 'solo'} />;
       case 'paired_partner_pending':
         return <Waiting />;
       case 'results_ready':
+        // This state would be reached after quiz submission. For now, we link to it from the quiz page.
         return <Results results={MOCK_RESULTS} flow={flow} />;
       default:
         return <p>Loading...</p>;
