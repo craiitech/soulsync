@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Logo } from '@/components/logo';
-import { ArrowRight, BarChart, Heart, Puzzle, Users, BookOpen, BrainCircuit, HeartHandshake, CheckCircle } from 'lucide-react';
+import { ArrowRight, BarChart, Heart, Puzzle, Users, BookOpen, BrainCircuit, HeartHandshake, CheckCircle, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
@@ -48,24 +48,37 @@ export default function Home() {
         )}
         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
 
-        <div className="z-10 flex flex-col items-center gap-6 max-w-2xl">
+        <div className="z-10 flex flex-col items-center gap-6 max-w-3xl">
           <Logo className="w-24 h-24" />
           <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tight text-foreground">
-            Welcome to SoulSync
+            Understand Your Connections
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
-            Discover the harmony in your connection. Explore your compatibility with your partner through insightful quizzes based on psychological frameworks.
+            Discover the harmony in your connections. Explore your own relationship style or test your compatibility with a partner through insightful, psychology-backed quizzes.
           </p>
-          <Link
-            href="/signup"
-            className={cn(
-              buttonVariants({ size: 'lg' }),
-              'font-bold text-lg'
-            )}
-          >
-            Get Started <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
-          <p className="text-sm text-muted-foreground">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+            <Link
+              href="/signup"
+              className={cn(
+                buttonVariants({ size: 'lg', variant: 'outline' }),
+                'font-bold text-lg bg-background/80'
+              )}
+            >
+              <User className="mr-2 h-5 w-5" />
+              Analyze Your Style
+            </Link>
+             <Link
+              href="/signup"
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'font-bold text-lg'
+              )}
+            >
+              <Users className="mr-2 h-5 w-5" />
+              Test Your Compatibility
+            </Link>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link
               href="/login"
