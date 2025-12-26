@@ -11,13 +11,15 @@ export function StartQuiz() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold font-headline">You're All Set!</h1>
         <p className="text-muted-foreground max-w-md">
-          You are ready to take the quiz.
+          You are ready to discover your relationship style.
         </p>
       </div>
       <Button asChild size="lg">
         <Link href="/quiz">
+          <span>
             Start Quiz
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-5 w-5 inline" />
+          </span>
         </Link>
       </Button>
     </div>
