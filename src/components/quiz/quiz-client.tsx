@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
-import type { QuizQuestion, QuizAnswers } from '@/lib/types';
+import type { QuizQuestion, QuizAnswers, QuizCategory } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -22,6 +23,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { computeSoloResults } from '@/lib/compute-results';
 
+const categoryDescriptions: Record<QuizCategory, string> = {
+  personality: "This section helps understand your core personality traits based on the 'Big Five' model, a standard in psychology.",
+  attachment: "These questions explore your style of forming and maintaining emotional bonds in relationships.",
+  values: "This section uncovers your core principles and what you find most important in life.",
+  love: "These questions delve into how you experience and express love and handle conflict in a relationship."
+};
 
 export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   const router = useRouter();
@@ -94,6 +101,11 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
             <Progress value={progress} />
           </div>
         </div>
+        <Card className="bg-secondary">
+          <CardContent className="p-3 text-center">
+            <p className="text-sm text-secondary-foreground">{categoryDescriptions[currentQuestion.category]}</p>
+          </CardContent>
+        </Card>
         <p className="text-sm text-right text-muted-foreground">
           Question {currentQuestionIndex + 1} of {questions.length}
         </p>
