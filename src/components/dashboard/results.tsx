@@ -1,7 +1,9 @@
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Target, HeartHandshake, Quote, BarChart, ShieldCheck, Gem, Star, Users } from 'lucide-react';
+import { TrendingUp, Target, HeartHandshake, Quote, BarChart, ShieldCheck, Gem, Star, Users, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
 export interface IndividualScore {
   category: string;
@@ -31,6 +33,24 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'Core Values': <Gem className="w-6 h-6 text-purple-500" />,
   'Love Style': <Star className="w-6 h-6 text-yellow-500" />,
 }
+
+const furtherReadingLinks = [
+    {
+        title: "The Big Five Personality Traits",
+        description: "A summary of the OCEAN model from the American Psychological Association.",
+        url: "https://www.apa.org/topics/personality/big-five-personality-traits"
+    },
+    {
+        title: "Attachment Theory",
+        description: "An overview of the work of John Bowlby and Mary Ainsworth on attachment styles.",
+        url: "https://www.verywellmind.com/what-is-attachment-theory-2795337"
+    },
+    {
+        title: "Triangular Theory of Love",
+        description: "An article on Robert Sternberg's theory, which involves intimacy, passion, and commitment.",
+        url: "https://www.verywellmind.com/robert-sternbergs-triangular-theory-of-love-2795940"
+    }
+]
 
 export function Results({ results, flow }: { results: ResultsData, flow: FlowType }) {
   const getBadgeVariant = (score: number) => {
@@ -167,6 +187,37 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
           </CardContent>
         </Card>
       </div>
+      
+      <div className="w-full mt-4">
+        <Card>
+            <CardHeader className="flex-row items-center gap-3 space-y-0">
+                <BookOpen className="w-6 h-6 text-primary" />
+                <CardTitle>Further Reading</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-left pt-6">
+                <p className="text-muted-foreground">
+                    Interested in the science behind your results? Explore the foundational research that inspires SoulSync.
+                </p>
+                <div className="grid grid-cols-1 gap-4">
+                  {furtherReadingLinks.map((link) => (
+                    <Link
+                        key={link.title}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 border rounded-lg hover:bg-secondary transition-colors"
+                    >
+                        <h4 className="font-semibold text-primary">{link.title}</h4>
+                        <p className="text-sm text-muted-foreground">{link.description}</p>
+                    </Link>
+                  ))}
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
     </div>
   );
 }
+
+    
