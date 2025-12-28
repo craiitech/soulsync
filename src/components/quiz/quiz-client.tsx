@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import type { QuizQuestion, QuizAnswers } from '@/lib/types';
@@ -19,19 +19,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { computeSoloResults } from '@/lib/compute-results';
 
-// Placeholder server action
-async function submitQuiz(answers: QuizAnswers) {
-  console.log('Submitting quiz with answers:', answers);
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  // In a real app, this would save to Firestore and trigger the AI flow
-  return { success: true };
-}
 
 export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -60,20 +53,27 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   };
 
   const handleSubmit = () => {
-    startTransition(async () => {
-      const result = await submitQuiz(answers);
-      if (result.success) {
+    startTransition(() => {
+      try {
+        // For now, we only compute solo results.
+        const results = computeSoloResults(answers);
+
+        // Store results in local storage to pass to the dashboard
+        localStorage.setItem('soulSyncResults', JSON.stringify(results));
+        
         toast({
           title: "Quiz Complete!",
           description: "Your responses have been submitted. Redirecting to your results...",
         });
-        const flow = searchParams.get('flow');
+        
         // Redirect to dashboard with params to show results
         router.push(`/dashboard?flow=solo&results=true`);
-      } else {
+
+      } catch (error) {
+        console.error("Failed to compute or store results:", error);
         toast({
           title: "Submission Failed",
-          description: "There was an error submitting your answers. Please try again.",
+          description: "There was an error processing your answers. Please try again.",
           variant: 'destructive',
         });
       }
@@ -85,7 +85,7 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           {currentQuestionIndex > 0 && (
-            <Button variant="ghost" size="icon" onClick={handleBack}>
+            <Button variant="ghost" size="icon" onClick={handleBack} disabled={isPending}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
@@ -128,6 +128,7 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
                     variant={answers[currentQuestion.id] === option.value ? 'default' : 'secondary'}
                     className="w-full h-auto justify-start p-4 text-wrap text-left"
                     onClick={() => handleAnswer(currentQuestion.id, option.value)}
+                    disabled={isPending}
                   >
                     <div className="flex items-center w-full">
                       <span className="flex-1">{option.text}</span>
@@ -144,7 +145,7 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       {isLastQuestion && Object.keys(answers).length === questions.length && (
          <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button size="lg" className="w-full font-bold animate-pulse">
+            <Button size="lg" className="w-full font-bold animate-pulse" disabled={isPending}>
                 <Sparkles className="mr-2 h-5 w-5" />
                 Finish & See Results
             </Button>

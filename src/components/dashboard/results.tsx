@@ -2,11 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Target, HeartHandshake, Quote } from 'lucide-react';
 
-interface ResultsData {
+export interface ResultsData {
   summary: string;
   strengths: string;
   growthAreas: string;
-  overallCompatibility: number;
+  overallScore: number;
   affirmation: string;
 }
 
@@ -50,7 +50,7 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
             className="text-primary"
             strokeWidth="10"
             strokeDasharray={2 * Math.PI * 45}
-            strokeDashoffset={2 * Math.PI * 45 * (1 - results.overallCompatibility / 100)}
+            strokeDashoffset={2 * Math.PI * 45 * (1 - results.overallScore / 100)}
             strokeLinecap="round"
             stroke="currentColor"
             fill="transparent"
@@ -61,7 +61,7 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
           />
         </svg>
         <div className="absolute flex flex-col items-center">
-          <span className="text-5xl font-bold text-primary">{results.overallCompatibility}</span>
+          <span className="text-5xl font-bold text-primary">{results.overallScore}</span>
           <span className="text-sm text-muted-foreground">{scoreTitle}</span>
         </div>
       </div>

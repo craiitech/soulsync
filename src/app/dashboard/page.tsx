@@ -1,68 +1,81 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+
 import { Header } from '@/components/header';
 import { Pairing } from '@/components/dashboard/pairing';
 import { StartQuiz } from '@/components/dashboard/start-quiz';
 import { Waiting } from '@/components/dashboard/waiting';
-import { Results } from '@/components/dashboard/results';
+import { Results, type ResultsData } from '@/components/dashboard/results';
 import { Card, CardContent } from '@/components/ui/card';
 
 // MOCK DATA and FUNCTIONS - In a real app, this would come from Firebase
 // after authenticating the user on the server.
 const MOCK_USER = { uid: 'user123', email: 'user@example.com', name: 'Alex' };
 
-type PairStatus = 'unpaired' | 'paired_user_pending' | 'paired_partner_pending' | 'results_ready';
+type PairStatus = 'unpaired' | 'paired_user_pending' | 'paired_partner_pending' | 'results_ready' | 'loading';
 type FlowType = 'solo' | 'couple';
 
 // This function simulates fetching data from Firestore and determining the state.
-const getDashboardState = async (userId: string, searchParams: { flow?: string; results?: string }): Promise<{ status: PairStatus, flow: FlowType }> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const requestedFlow = searchParams.flow === 'solo' ? 'solo' : 'couple';
+const getDashboardState = (userId: string, searchParams: URLSearchParams): { status: PairStatus, flow: FlowType } => {
+  const requestedFlow = searchParams.get('flow') === 'solo' ? 'solo' : 'couple';
+  const showResults = searchParams.get('results') === 'true';
 
-  // This logic simulates different states based on the flow.
-  // In a real app, you'd check Firestore for the user's status.
+  if (showResults) {
+    return { status: 'results_ready', flow: requestedFlow };
+  }
+  
   if (requestedFlow === 'solo') {
-    // If results=true is in the URL, show the results page.
-    if (searchParams.results === 'true') {
-      return { status: 'results_ready', flow: 'solo' };
-    }
-    // Otherwise, show the start quiz button for a solo user.
     return { status: 'paired_user_pending', flow: 'solo' };
   } else {
-    // For a couple, we'll show the pairing screen by default.
     return { status: 'unpaired', flow: 'couple' };
   }
 };
 
-const MOCK_RESULTS = {
-    summary: "You have a strong foundation built on core values of authenticity and growth. You approach relationships with a secure attachment style, which fosters trust and open communication. Your personality is balanced, with a healthy mix of extroversion and introspection, creating a dynamic and supportive nature.",
-    strengths: "Core values in honesty and personal growth. Secure attachment style leading to high trust. Well-balanced personality traits.",
-    growthAreas: "Tendency to be self-critical under stress. Occasional difficulty setting firm boundaries. Navigating high-energy social situations can be draining.",
-    overallCompatibility: 88, // This will be interpreted as a self-score for solo
-    affirmation: "Like a tree with deep roots, you are grounded and resilient, capable of weathering any storm while continuing to reach for the sun."
-};
-// END MOCK DATA
 
-export default async function DashboardPage({ searchParams }: { searchParams: { flow?: string; results?: string } }) {
+export default function DashboardPage() {
+  const searchParams = useSearchParams();
+  const [status, setStatus] = useState<PairStatus>('loading');
+  const [flow, setFlow] = useState<FlowType>('couple');
+  const [results, setResults] = useState<ResultsData | null>(null);
+
   // In a real app, you would get the user from the session
   const user = MOCK_USER; 
-  const { status, flow } = await getDashboardState(user.uid, searchParams);
-
-  // Generate a random 6-digit code. This is fine on the server.
+  
+  // Generate a random 6-digit code. This is fine on the client for this mock.
   const pairCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+  useEffect(() => {
+    const { status: newStatus, flow: newFlow } = getDashboardState(user.uid, searchParams);
+    setStatus(newStatus);
+    setFlow(newFlow);
+
+    if (newStatus === 'results_ready') {
+      const storedResults = localStorage.getItem('soulSyncResults');
+      if (storedResults) {
+        setResults(JSON.parse(storedResults));
+        // Optional: clear the results from storage after displaying them
+        // localStorage.removeItem('soulSyncResults');
+      } else {
+        // Handle case where results are expected but not found
+        console.error("Results expected but not found in local storage.");
+        // Potentially redirect or show an error message
+      }
+    }
+  }, [searchParams, user.uid]);
+  
   const renderContent = () => {
     switch (status) {
+      case 'loading':
+         return <p>Loading...</p>;
       case 'unpaired':
         return <Pairing user={user} pairCode={pairCode} />;
       case 'paired_user_pending':
-        // For a solo user, this shows the Start Quiz button.
         return <StartQuiz isSolo={flow === 'solo'} />;
       case 'paired_partner_pending':
         return <Waiting />;
       case 'results_ready':
-        // This state is now reachable for the solo flow via query param.
-        return <Results results={MOCK_RESULTS} flow={flow} />;
+        return results ? <Results results={results} flow={flow} /> : <p>Loading results...</p>;
       default:
         return <p>Loading...</p>;
     }
@@ -81,3 +94,4 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
     </div>
   );
 }
+
