@@ -1,6 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Target, HeartHandshake, Quote } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { TrendingUp, Target, HeartHandshake, Quote, BarChart, ShieldCheck, Gem } from 'lucide-react';
+
+export interface IndividualScore {
+  category: string;
+  description: string;
+  scores: {
+    name: string;
+    value: number;
+    insight: string;
+  }[];
+}
 
 export interface ResultsData {
   summary: string;
@@ -8,9 +19,16 @@ export interface ResultsData {
   growthAreas: string;
   overallScore: number;
   affirmation: string;
+  individualScores: IndividualScore[];
 }
 
 type FlowType = 'solo' | 'couple';
+
+const categoryIcons: Record<string, React.ReactNode> = {
+  'Personality Traits': <BarChart className="w-6 h-6 text-blue-500" />,
+  'Attachment Style': <ShieldCheck className="w-6 h-6 text-green-500" />,
+  'Core Values': <Gem className="w-6 h-6 text-purple-500" />,
+}
 
 export function Results({ results, flow }: { results: ResultsData, flow: FlowType }) {
   const getBadgeVariant = (score: number) => {
@@ -69,6 +87,35 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
       <p className="max-w-prose text-lg text-foreground italic p-4 border-l-4 border-primary bg-secondary rounded-r-lg">
         {results.summary}
       </p>
+
+      {/* Individual Score Breakdown */}
+      <div className="w-full space-y-6 text-left mt-4">
+        <h2 className="text-2xl font-bold font-headline text-center">Score Breakdown</h2>
+        {results.individualScores.map((area) => (
+          <Card key={area.category}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                {categoryIcons[area.category]}
+                <CardTitle>{area.category}</CardTitle>
+              </div>
+              <CardDescription>{area.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {area.scores.map((score) => (
+                <div key={score.name}>
+                  <div className="flex justify-between items-center mb-1">
+                    <p className="font-semibold">{score.name}</p>
+                    <p className="text-sm font-bold text-primary">{score.value}%</p>
+                  </div>
+                  <Progress value={score.value} />
+                  <p className="text-xs text-muted-foreground mt-1">{score.insight}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full mt-4">
         <Card>
