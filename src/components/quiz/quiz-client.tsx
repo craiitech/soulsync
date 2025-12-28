@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useTransition, useEffect, Suspense } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
@@ -31,7 +31,7 @@ const categoryDescriptions: Record<QuizCategory, string> = {
   love: "These questions delve into how you experience and express love and handle conflict in a relationship."
 };
 
-function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
+export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -55,7 +55,7 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
     // This will be shown briefly while the useEffect redirects.
     return (
         <div className="text-center">
-            <p>Loading...</p>
+            <p>Validating session...</p>
         </div>
     )
   }
@@ -213,13 +213,3 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
     </div>
   );
 }
-
-export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
-    return (
-      <Suspense fallback={<p>Loading Quiz...</p>}>
-        <QuizComponent questions={questions} />
-      </Suspense>
-    )
-}
-
-    

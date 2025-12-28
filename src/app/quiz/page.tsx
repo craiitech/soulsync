@@ -1,7 +1,13 @@
 import { Suspense } from 'react';
 import { Header } from '@/components/header';
-import { QuizClient } from '@/components/quiz/quiz-client';
 import { quizQuestions } from '@/lib/quiz-data';
+import dynamic from 'next/dynamic';
+
+const QuizClient = dynamic(() => import('@/components/quiz/quiz-client').then(mod => mod.QuizClient), {
+  ssr: false,
+  loading: () => <QuizLoading />,
+});
+
 
 function QuizLoading() {
     return (
@@ -15,14 +21,6 @@ function QuizLoading() {
 }
 
 export default function QuizPage() {
-  return (
-    <Suspense fallback={<QuizLoading />}>
-      <QuizPageContent />
-    </Suspense>
-  );
-}
-
-function QuizPageContent() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header user={null} />
