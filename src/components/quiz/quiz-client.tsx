@@ -44,8 +44,11 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
     const userName = searchParams.get('name');
     if (userName) {
       setName(userName);
+    } else {
+        // If there's no name, they shouldn't be here.
+        router.replace('/solo-intro');
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
@@ -106,6 +109,7 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
   };
 
   if (!name) {
+    // This will be shown briefly while the useEffect redirects.
     return (
         <div className="text-center">
             <p>Loading...</p>
@@ -211,8 +215,6 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
 
 export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
     return (
-        <Suspense fallback={<p>Loading Quiz...</p>}>
-            <QuizComponent questions={questions} />
-        </Suspense>
+        <QuizComponent questions={questions} />
     )
 }
