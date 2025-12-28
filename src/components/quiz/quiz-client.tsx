@@ -40,8 +40,10 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [direction, setDirection] = useState(1);
   const [name, setName] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const userName = searchParams.get('name');
     if (userName) {
       setName(userName);
@@ -51,11 +53,11 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
     }
   }, [searchParams, router]);
 
-  if (!name) {
-    // This will be shown briefly while the useEffect redirects.
+  if (!isClient || !name) {
+    // This will be shown briefly while the useEffect redirects or client hydrates.
     return (
         <div className="text-center">
-            <p>Validating session...</p>
+            <p>Loading Quiz...</p>
         </div>
     )
   }
