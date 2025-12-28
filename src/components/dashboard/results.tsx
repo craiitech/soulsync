@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Target, HeartHandshake, Quote, BarChart, ShieldCheck, Gem } from 'lucide-react';
+import { TrendingUp, Target, HeartHandshake, Quote, BarChart, ShieldCheck, Gem, Star, Users } from 'lucide-react';
 
 export interface IndividualScore {
   category: string;
@@ -20,6 +20,7 @@ export interface ResultsData {
   overallScore: number;
   affirmation: string;
   individualScores: IndividualScore[];
+  compatibilityProfile?: string; // Optional: For solo results
 }
 
 type FlowType = 'solo' | 'couple';
@@ -28,6 +29,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   'Personality Traits': <BarChart className="w-6 h-6 text-blue-500" />,
   'Attachment Style': <ShieldCheck className="w-6 h-6 text-green-500" />,
   'Core Values': <Gem className="w-6 h-6 text-purple-500" />,
+  'Love Style': <Star className="w-6 h-6 text-yellow-500" />,
 }
 
 export function Results({ results, flow }: { results: ResultsData, flow: FlowType }) {
@@ -95,7 +97,7 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
           <Card key={area.category}>
             <CardHeader>
               <div className="flex items-center gap-3">
-                {categoryIcons[area.category]}
+                {categoryIcons[area.category] || <BarChart className="w-6 h-6" />}
                 <CardTitle>{area.category}</CardTitle>
               </div>
               <CardDescription>{area.description}</CardDescription>
@@ -137,6 +139,20 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
           </CardContent>
         </Card>
       </div>
+
+       {flow === 'solo' && results.compatibilityProfile && (
+        <div className="w-full mt-4">
+            <Card>
+                <CardHeader className="flex-row items-center gap-3 space-y-0">
+                    <Users className="w-6 h-6 text-primary" />
+                    <CardTitle>Who You Vibe With</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground text-left">{results.compatibilityProfile}</p>
+                </CardContent>
+            </Card>
+        </div>
+      )}
 
        <div className="w-full mt-4">
         <Card className="bg-gradient-to-r from-primary/10 to-accent/10">

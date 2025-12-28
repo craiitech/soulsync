@@ -10,12 +10,11 @@ const getAnswer = (answers: QuizAnswers, id: string) => answers[id] || 3;
 // Note: Some questions are reverse-scored.
 const calculatePersonalityScores = (answers: QuizAnswers) => {
   // O-C-E-A-N
-  const openness = (getAnswer(answers, 'p5') + getAnswer(answers, 'p10')) / 2;
-  const conscientiousness = (getAnswer(answers, 'p3') + getAnswer(answers, 'p8')) / 2;
-  const extraversion = (getAnswer(answers, 'p1') + getAnswer(answers, 'p6')) / 2;
-  const agreeableness = (getAnswer(answers, 'p2') + getAnswer(answers, 'p7')) / 2;
-  // p9 is direct for emotional stability, p4 is reversed for neuroticism
-  const emotionalStability = (getAnswer(answers, 'p9') + getAnswer(answers, 'p4')) / 2;
+  const openness = (getAnswer(answers, 'p5') + (6 - getAnswer(answers, 'p10'))) / 2;
+  const conscientiousness = (getAnswer(answers, 'p3') + (6 - getAnswer(answers, 'p8'))) / 2;
+  const extraversion = (getAnswer(answers, 'p1') + (6 - getAnswer(answers, 'p6'))) / 2;
+  const agreeableness = ((6 - getAnswer(answers, 'p2')) + getAnswer(answers, 'p7')) / 2;
+  const emotionalStability = ((6 - getAnswer(answers, 'p4')) + getAnswer(answers, 'p9')) / 2;
 
   return {
     openness: { score: Math.round(openness * 20) },
@@ -28,8 +27,8 @@ const calculatePersonalityScores = (answers: QuizAnswers) => {
 
 // ATTACHMENT STYLE
 const calculateAttachmentScores = (answers: QuizAnswers) => {
-  const avoidanceRaw = (getAnswer(answers, 'a1') + getAnswer(answers, 'a2') + getAnswer(answers, 'a3') + getAnswer(answers, 'a4')) / 4;
-  const anxietyRaw = (getAnswer(answers, 'a5') + getAnswer(answers, 'a6') + getAnswer(answers, 'a7') + getAnswer(answers, 'a8')) / 4;
+  const avoidanceRaw = (getAnswer(answers, 'a1') + getAnswer(answers, 'a2') + (6 - getAnswer(answers, 'a3')) + (6 - getAnswer(answers, 'a4'))) / 4;
+  const anxietyRaw = (getAnswer(answers, 'a5') + getAnswer(answers, 'a6') + (6 - getAnswer(answers, 'a7')) + getAnswer(answers, 'a8')) / 4;
 
   // We want a "Secure" score, so we invert the insecure measures.
   const security = (6 - (avoidanceRaw + anxietyRaw) / 2);
@@ -37,14 +36,14 @@ const calculateAttachmentScores = (answers: QuizAnswers) => {
   let style = 'Secure';
   if (avoidanceRaw > 3 && anxietyRaw > 3) {
     style = 'Anxious-Avoidant';
-  } else if (avoidanceRaw > 3) {
+  } else if (avoidanceRaw > 3.2) {
     style = 'Avoidant';
-  } else if (anxietyRaw > 3) {
+  } else if (anxietyRaw > 3.2) {
     style = 'Anxious';
   }
   
   return {
-    score: Math.round(security * 20),
+    score: Math.round(Math.max(0, security * 20)),
     style,
     raw: { anxiety: anxietyRaw, avoidance: avoidanceRaw }
   };
@@ -52,9 +51,9 @@ const calculateAttachmentScores = (answers: QuizAnswers) => {
 
 // CORE VALUES
 const calculateValueScores = (answers: QuizAnswers) => {
-    const tradition = (getAnswer(answers, 'v3') + getAnswer(answers, 'v4')) / 2; // Humility, Security
-    const achievement = (getAnswer(answers, 'v2') + getAnswer(answers, 'v5')) / 2; // Competence, Helping
-    const stimulation = (getAnswer(answers, 'v1') + getAnswer(answers, 'v6')) / 2; // Excitement, Independence
+    const tradition = (getAnswer(answers, 'v3') + getAnswer(answers, 'v4')) / 2;
+    const achievement = (getAnswer(answers, 'v2') + getAnswer(answers, 'v5')) / 2;
+    const stimulation = (getAnswer(answers, 'v1') + getAnswer(answers, 'v6')) / 2;
 
     return {
         tradition: { score: Math.round(tradition * 20) },
@@ -62,6 +61,23 @@ const calculateValueScores = (answers: QuizAnswers) => {
         stimulation: { score: Math.round(stimulation * 20) },
     }
 }
+
+// LOVE STYLE
+const calculateLoveStyleScores = (answers: QuizAnswers) => {
+    const intimacy = getAnswer(answers, 'l1');
+    const passion = getAnswer(answers, 'l2');
+    const commitment = getAnswer(answers, 'l3');
+    // For conflict, a lower score is better, so we reverse it.
+    const conflictResolution = ( (6 - getAnswer(answers, 'l4')) + (6 - getAnswer(answers, 'l5')) + getAnswer(answers, 'l6') ) / 3;
+
+    return {
+        intimacy: { score: Math.round(intimacy * 20) },
+        passion: { score: Math.round(passion * 20) },
+        commitment: { score: Math.round(commitment * 20) },
+        conflictResolution: { score: Math.round(conflictResolution * 20) },
+    }
+}
+
 
 // --- Text Generation ---
 
@@ -92,6 +108,8 @@ const getAttachmentBlurb = (scores: ReturnType<typeof calculateAttachmentScores>
             return 'You lean towards an avoidant attachment style, prioritizing independence and self-sufficiency.';
         case 'Anxious-Avoidant':
             return 'You show traits of both anxious and avoidant styles, desiring closeness but also valuing your independence.';
+        default:
+            return 'Your attachment style is a unique blend, showing flexibility in how you approach relationships.'
     }
 }
 
@@ -117,12 +135,49 @@ const getGrowthAreas = (pScores: ReturnType<typeof calculatePersonalityScores>, 
     return areas.join(' ');
 }
 
+const getCompatibilityProfile = (
+    pScores: ReturnType<typeof calculatePersonalityScores>,
+    aScores: ReturnType<typeof calculateAttachmentScores>
+): string => {
+    let profile = [];
+
+    // Attachment is key
+    if (aScores.style === 'Secure') {
+        profile.push("You are a great match for many types of people, as your secure base can help partners who are more anxious or avoidant feel safe.");
+    } else if (aScores.style === 'Anxious') {
+        profile.push("You would thrive with a partner who has a secure attachment style. Their consistency and reassurance can help soothe your anxieties and build a strong, trusting bond.");
+    } else if (aScores.style === 'Avoidant') {
+        profile.push("You would pair well with a patient and secure partner. They can provide the understanding and space you need, while gently encouraging deeper connection without feeling overwhelming.");
+    } else {
+        profile.push("A secure and patient partner would be a great match, helping to create a stable environment where you can explore both intimacy and independence safely.");
+    }
+
+    // Personality
+    if (pScores.extraversion.score > 70) {
+        profile.push("Look for an introvert who appreciates your energy and can help you recharge, or a fellow extrovert to share in your social adventures.");
+    } else if (pScores.extraversion.score < 30) {
+        profile.push("A partner who respects your need for quiet and solitude is key. They might be a fellow introvert or a calm extrovert who understands your boundaries.");
+    }
+
+    if (pScores.conscientiousness.score < 40) {
+        profile.push("A more organized and structured partner could bring balance and stability, helping you stay on track with shared goals.");
+    }
+
+    if (profile.length <= 1) {
+        profile.push("Because you have a balanced profile, you may find you connect well with a wide variety of personalities. Look for someone whose core values align with your own.");
+    }
+
+    return profile.join(" ");
+};
+
+
 // --- Main Computation Function ---
 
 export const computeSoloResults = (answers: QuizAnswers): ResultsData => {
   const personalityScores = calculatePersonalityScores(answers);
   const attachmentInfo = calculateAttachmentScores(answers);
   const valueScores = calculateValueScores(answers);
+  const loveStyleScores = calculateLoveStyleScores(answers);
 
   const personalityBlurb = getPersonalityBlurb(personalityScores);
   const attachmentBlurb = getAttachmentBlurb(attachmentInfo);
@@ -130,6 +185,7 @@ export const computeSoloResults = (answers: QuizAnswers): ResultsData => {
   const summary = `${personalityBlurb} In relationships, ${attachmentBlurb.toLowerCase()}`;
   const strengths = getStrengths(personalityScores, attachmentInfo);
   const growthAreas = getGrowthAreas(personalityScores, attachmentInfo);
+  const compatibilityProfile = getCompatibilityProfile(personalityScores, attachmentInfo);
   
   // Overall score is an average of "positive" or "healthy" traits
   const overallScore = Math.round(
@@ -156,7 +212,7 @@ export const computeSoloResults = (answers: QuizAnswers): ResultsData => {
       category: 'Attachment Style',
       description: "This reflects how you connect with others in close relationships.",
       scores: [
-        { name: 'Security', value: attachmentInfo.score, insight: "A higher score indicates comfort with intimacy and autonomy." },
+        { name: 'Security', value: attachmentInfo.score, insight: `A higher score indicates comfort with intimacy and autonomy. Your style appears to be: ${attachmentInfo.style}` },
       ]
     },
     {
@@ -167,6 +223,16 @@ export const computeSoloResults = (answers: QuizAnswers): ResultsData => {
         { name: 'Achievement & Benevolence', value: valueScores.achievement.score, insight: "Drive for personal success and caring for others." },
         { name: 'Stimulation & Self-Direction', value: valueScores.stimulation.score, insight: "Desire for excitement, novelty, and independence." },
       ]
+    },
+    {
+        category: 'Love Style',
+        description: 'This explores how you experience love and handle conflict.',
+        scores: [
+            { name: 'Intimacy', value: loveStyleScores.intimacy.score, insight: "Desire for closeness and emotional connection."},
+            { name: 'Passion', value: loveStyleScores.passion.score, insight: "The 'in-love' feeling, including physical and sexual attraction."},
+            { name: 'Commitment', value: loveStyleScores.commitment.score, insight: "The decision to maintain the relationship long-term."},
+            { name: 'Conflict Resolution', value: loveStyleScores.conflictResolution.score, insight: "Ability to navigate disagreements constructively."},
+        ]
     }
   ];
 
@@ -176,7 +242,8 @@ export const computeSoloResults = (answers: QuizAnswers): ResultsData => {
     growthAreas,
     overallScore,
     affirmation: 'The greatest journey you can take is the one of self-discovery. Each step reveals more of the unique and valuable person you are.',
-    individualScores
+    individualScores,
+    compatibilityProfile,
   };
 };
 
