@@ -30,9 +30,9 @@ export default function SoloIntroPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Header user={null} />
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
         <Card className="w-full max-w-lg shadow-2xl">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
@@ -78,7 +78,7 @@ export default function SoloIntroPage() {
             </Form>
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 }
