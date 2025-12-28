@@ -28,7 +28,7 @@ const calculatePersonalityScores = (answers: QuizAnswers) => {
 // ATTACHMENT STYLE
 const calculateAttachmentScores = (answers: QuizAnswers) => {
   const avoidanceRaw = (getAnswer(answers, 'a1') + getAnswer(answers, 'a2') + (6 - getAnswer(answers, 'a3')) + (6 - getAnswer(answers, 'a4'))) / 4;
-  const anxietyRaw = (getAnswer(answers, 'a5') + getAnswer(answers, 'a6') + (6 - getAnswer(answers, 'a7')) + getAnswer(answers, 'a8')) / 4;
+  const anxietyRaw = (getAnswer(answers, 'a5') + getAnswer(answers, 'a6') + (6 - getAnswer(answers, 'a7')) + (6 - getAnswer(answers, 'a8'))) / 4;
 
   // We want a "Secure" score, so we invert the insecure measures.
   const security = (6 - (avoidanceRaw + anxietyRaw) / 2);
@@ -67,7 +67,7 @@ const calculateLoveStyleScores = (answers: QuizAnswers) => {
     const intimacy = getAnswer(answers, 'l1');
     const passion = getAnswer(answers, 'l2');
     const commitment = getAnswer(answers, 'l3');
-    // For conflict, a lower score is better, so we reverse it.
+    // For conflict, a lower score on l4 and l5 is better, so we reverse it.
     const conflictResolution = ( (6 - getAnswer(answers, 'l4')) + (6 - getAnswer(answers, 'l5')) + getAnswer(answers, 'l6') ) / 3;
 
     return {

@@ -337,11 +337,11 @@ export const quizQuestions: QuizQuestion[] = [
     category: 'love',
     text: 'During conflicts, I tend to shut down or withdraw.',
     options: [
-      { text: 'Strongly Disagree', value: 1 }, // Low score is good
-      { text: 'Disagree', value: 2 },
+      { text: 'Strongly Disagree', value: 5 }, // Reversed
+      { text: 'Disagree', value: 4 },
       { text: 'Neutral', value: 3 },
-      { text: 'Agree', value: 4 },
-      { text: 'Strongly Agree', value: 5 },
+      { text: 'Agree', value: 2 },
+      { text: 'Strongly Agree', value: 1 },
     ],
   },
   {
@@ -349,11 +349,11 @@ export const quizQuestions: QuizQuestion[] = [
     category: 'love',
     text: 'When my partner and I disagree, I am more likely to get critical or defensive.',
     options: [
-      { text: 'Strongly Disagree', value: 1 }, // Low score is good
-      { text: 'Disagree', value: 2 },
+      { text: 'Strongly Disagree', value: 5 }, // Reversed
+      { text: 'Disagree', value: 4 },
       { text: 'Neutral', value: 3 },
-      { text: 'Agree', value: 4 },
-      { text: 'Strongly Agree', value: 5 },
+      { text: 'Agree', value: 2 },
+      { text: 'Strongly Agree', value: 1 },
     ],
   },
    {
