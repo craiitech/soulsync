@@ -6,10 +6,8 @@ import type { QuizQuestion } from '@/lib/types';
 // Define a loading component to be used as a fallback
 function QuizLoading() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-1 flex flex-col items-center justify-start py-8 px-4">
-        <p>Loading Quiz...</p>
-      </main>
+    <div className="flex flex-col items-center justify-start py-8 px-4">
+      <p>Loading Quiz...</p>
     </div>
   );
 }
