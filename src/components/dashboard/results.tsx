@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -52,14 +51,14 @@ const furtherReadingLinks = [
     }
 ]
 
-export function Results({ results, flow }: { results: ResultsData, flow: FlowType }) {
+export function Results({ results, flow, name }: { results: ResultsData, flow: FlowType, name?: string | null }) {
   const getBadgeVariant = (score: number) => {
     if (score > 80) return 'default';
     if (score > 60) return 'secondary';
     return 'destructive';
   }
   
-  const title = flow === 'solo' ? 'Your Personal Style Analysis' : 'Your SoulSync Results';
+  const title = flow === 'solo' ? `Your Personal Style Analysis${name ? `, ${name}` : ''}` : 'Your SoulSync Results';
   const description = flow === 'solo' 
     ? "Here is a snapshot of your personal style based on your quiz responses. This is a tool for self-discovery and growth."
     : "Here is a snapshot of your compatibility based on your quiz responses. Remember, this is a tool for insight, not a final judgment.";
@@ -219,5 +218,3 @@ export function Results({ results, flow }: { results: ResultsData, flow: FlowTyp
     </div>
   );
 }
-
-    

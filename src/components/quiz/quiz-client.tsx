@@ -1,8 +1,7 @@
-
 "use client";
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useTransition, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
 import type { QuizQuestion, QuizAnswers, QuizCategory } from '@/lib/types';
@@ -22,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { computeSoloResults } from '@/lib/compute-results';
+import { Suspense } from 'react';
 
 const categoryDescriptions: Record<QuizCategory, string> = {
   personality: "This section helps understand your core personality traits based on the 'Big Five' model, a standard in psychology.",
@@ -30,13 +30,22 @@ const categoryDescriptions: Record<QuizCategory, string> = {
   love: "These questions delve into how you experience and express love and handle conflict in a relationship."
 };
 
-export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
+function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [direction, setDirection] = useState(1);
+  const [name, setName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userName = searchParams.get('name');
+    if (userName) {
+      setName(userName);
+    }
+  }, [searchParams]);
 
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
@@ -60,13 +69,22 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
   };
 
   const handleSubmit = () => {
+    if (!name) {
+        toast({
+            title: "Missing Information",
+            description: "Could not find your name. Please start again.",
+            variant: "destructive",
+        });
+        router.push("/solo-intro");
+        return;
+    }
+
     startTransition(() => {
       try {
-        // For now, we only compute solo results.
         const results = computeSoloResults(answers);
 
-        // Store results in local storage to pass to the dashboard
-        localStorage.setItem('soulSyncResults', JSON.stringify(results));
+        // Store results and name in local storage
+        localStorage.setItem('soulSyncData', JSON.stringify({ results, name }));
         
         toast({
           title: "Quiz Complete!",
@@ -86,6 +104,14 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       }
     });
   };
+
+  if (!name) {
+    return (
+        <div className="text-center">
+            <p>Loading...</p>
+        </div>
+    )
+  }
 
   return (
     <div className="w-full max-w-2xl space-y-8">
@@ -181,4 +207,12 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       )}
     </div>
   );
+}
+
+export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
+    return (
+        <Suspense fallback={<p>Loading Quiz...</p>}>
+            <QuizComponent questions={questions} />
+        </Suspense>
+    )
 }

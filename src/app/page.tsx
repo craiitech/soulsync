@@ -58,7 +58,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <Link
-              href="/dashboard?flow=solo"
+              href="/solo-intro"
               className={cn(
                 buttonVariants({ size: 'lg', variant: 'outline' }),
                 'font-bold text-lg bg-background/80'
@@ -79,7 +79,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            No account needed. Just start your analysis.
+            No account needed to start.
           </p>
         </div>
       </div>
