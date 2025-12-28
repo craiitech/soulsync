@@ -9,8 +9,8 @@ export const Logo = ({ className }: { className?: string }) => {
     >
       <defs>
         <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-           <stop offset="0%" style={{ stopColor: "rgb(239 68 68)", stopOpacity: 1 }} />
-           <stop offset="100%" style={{ stopColor: "rgb(185 28 28)", stopOpacity: 1 }} />
+           <stop offset="0%" style={{ stopColor: "hsl(var(--primary))", stopOpacity: 1 }} />
+           <stop offset="100%" style={{ stopColor: "hsl(var(--accent))", stopOpacity: 1 }} />
         </linearGradient>
       </defs>
       <path
