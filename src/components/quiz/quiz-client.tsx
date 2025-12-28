@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useTransition, useEffect, Suspense } from 'react';
@@ -49,6 +50,15 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
         router.replace('/solo-intro');
     }
   }, [searchParams, router]);
+
+  if (!name) {
+    // This will be shown briefly while the useEffect redirects.
+    return (
+        <div className="text-center">
+            <p>Loading...</p>
+        </div>
+    )
+  }
 
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
@@ -107,15 +117,6 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
       }
     });
   };
-
-  if (!name) {
-    // This will be shown briefly while the useEffect redirects.
-    return (
-        <div className="text-center">
-            <p>Loading...</p>
-        </div>
-    )
-  }
 
   return (
     <div className="w-full max-w-2xl space-y-8">
@@ -220,3 +221,5 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
       </Suspense>
     )
 }
+
+    
