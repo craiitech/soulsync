@@ -107,6 +107,110 @@ export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
         // Redirect to dashboard with params to show results
         router.push(`/dashboard?flow=solo&results=true`);
 
+      } catch (error) from 'lucide-react';
+import type { QuizQuestion, QuizAnswers, QuizCategory } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { computeSoloResults } from '@/lib/compute-results';
+import { quizQuestions } from '@/lib/quiz-data';
+
+
+const categoryDescriptions: Record<QuizCategory, string> = {
+  personality: "This section helps understand your core personality traits based on the 'Big Five' model, a standard in psychology.",
+  attachment: "These questions explore your style of forming and maintaining emotional bonds in relationships.",
+  values: "This section uncovers your core principles and what you find most important in life.",
+  love: "These questions delve into how you experience and express love and handle conflict in a relationship."
+};
+
+export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<QuizAnswers>({});
+  const [direction, setDirection] = useState(1);
+  const [name, setName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const userName = searchParams.get('name');
+    if (userName) {
+      setName(userName);
+    } else {
+        // If there's no name, they shouldn't be here.
+        router.replace('/solo-intro');
+    }
+  }, [searchParams, router]);
+
+  if (!name) {
+    // This will be shown briefly while the useEffect redirects or client hydrates.
+    return (
+        <div className="text-center">
+            <p>Loading Quiz...</p>
+        </div>
+    )
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+  const handleAnswer = (questionId: string, value: number) => {
+    setAnswers(prev => ({ ...prev, [questionId]: value }));
+    if (!isLastQuestion) {
+      setTimeout(() => {
+        setDirection(1);
+        setCurrentQuestionIndex(prev => prev + 1);
+      }, 300);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentQuestionIndex > 0) {
+      setDirection(-1);
+      setCurrentQuestionIndex(prev => prev - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!name) {
+        toast({
+            title: "Missing Information",
+            description: "Could not find your name. Please start again.",
+            variant: "destructive",
+        });
+        router.push("/solo-intro");
+        return;
+    }
+
+    startTransition(() => {
+      try {
+        const results = computeSoloResults(answers);
+
+        // Store results and name in local storage
+        localStorage.setItem('soulSyncData', JSON.stringify({ results, name }));
+        
+        toast({
+          title: "Quiz Complete!",
+          description: "Your responses have been submitted. Redirecting to your results...",
+        });
+        
+        // Redirect to dashboard with params to show results
+        router.push(`/dashboard?flow=solo&results=true`);
+
       } catch (error) {
         console.error("Failed to compute or store results:", error);
         toast({

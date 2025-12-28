@@ -1,12 +1,14 @@
-"use client";
+"use client"
 
-export const dynamic = "force-dynamic";
-
-import { QuizWrapper } from "@/components/quiz/quiz-wrapper";
 import { quizQuestions } from '@/lib/quiz-data';
+import type { QuizQuestion } from '@/lib/types';
+import dynamic from "next/dynamic"
+
+const QuizClient = dynamic(() => import("@/components/quiz/quiz-client").then(mod => mod.QuizClient), {
+  ssr: false,
+  loading: () => <p>Loading Quiz...</p>
+})
 
 export default function QuizPage() {
-    return (
-        <QuizWrapper questions={quizQuestions} />
-    );
+  return <QuizClient questions={quizQuestions} />
 }
