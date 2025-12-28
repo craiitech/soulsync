@@ -56,31 +56,6 @@ export default function Home() {
           <p className="text-lg md:text-xl text-muted-foreground">
             Discover the harmony in your connections. Explore your own relationship style or test your compatibility with a partner through insightful, psychology-backed quizzes.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <Link
-              href="/solo-intro"
-              className={cn(
-                buttonVariants({ size: 'lg', variant: 'outline' }),
-                'font-bold text-lg bg-background/80'
-              )}
-            >
-              <User className="mr-2 h-5 w-5" />
-              Analyze Your Style
-            </Link>
-             <Link
-              href="/dashboard"
-              className={cn(
-                buttonVariants({ size: 'lg' }),
-                'font-bold text-lg'
-              )}
-            >
-              <Users className="mr-2 h-5 w-5" />
-              Test Your Compatibility
-            </Link>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            No account needed to start.
-          </p>
         </div>
       </div>
       
@@ -209,6 +184,40 @@ export default function Home() {
               This application was developed by Dr. Marvin Rick G. Forcado. It is built upon established psychological research to provide users with meaningful insights into their relationship dynamics. The analysis incorporates principles from the "Big Five" personality traits model, Attachment Theory, and research into core values and love styles to generate a comprehensive and personalized compatibility report.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section id="get-started" className="w-full py-16 bg-background">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline">Ready to Begin?</h2>
+          <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+            Choose your path to discovery. Analyze your own style for personal insight or take the quiz with a partner to understand your connection better.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+            <Link
+              href="/solo-intro"
+              className={cn(
+                buttonVariants({ size: 'lg', variant: 'outline' }),
+                'font-bold text-lg bg-background/80'
+              )}
+            >
+              <User className="mr-2 h-5 w-5" />
+              Analyze Your Style
+            </Link>
+             <Link
+              href="/dashboard"
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'font-bold text-lg'
+              )}
+            >
+              <Users className="mr-2 h-5 w-5" />
+              Test Your Compatibility
+            </Link>
+          </div>
+           <p className="mt-4 text-sm text-muted-foreground">
+            No account needed for solo analysis.
+          </p>
         </div>
       </section>
 
