@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Check, Loader2, Sparkles } from 'lucide-react';
@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { computeSoloResults } from '@/lib/compute-results';
-import { Suspense } from 'react';
+
 
 const categoryDescriptions: Record<QuizCategory, string> = {
   personality: "This section helps understand your core personality traits based on the 'Big Five' model, a standard in psychology.",
@@ -215,6 +215,8 @@ function QuizComponent({ questions }: { questions: QuizQuestion[] }) {
 
 export function QuizClient({ questions }: { questions: QuizQuestion[] }) {
     return (
+      <Suspense fallback={<p>Loading Quiz...</p>}>
         <QuizComponent questions={questions} />
+      </Suspense>
     )
 }
