@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { ArrowRight, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+export const dynamic = "force-dynamic";
+
 export default function SoloIntroPage() {
   const [name, setName] = useState('');
   const router = useRouter();
